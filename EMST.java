@@ -114,8 +114,8 @@ File structure (top to bottom)
 
          // If in visual mode, show each edge being added
          if (visual) {
-            StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.setPenRadius(0.005);
+            StdDraw.setPenColor(StdDraw.LINES);
+            StdDraw.setPenRadius(0.006);
             StdDraw.line(u.xPos, u.yPos, v.xPos, v.yPos);
 
             StdDraw.show();
@@ -234,8 +234,10 @@ File structure (top to bottom)
 
       StdDraw.enableDoubleBuffering();
 
+      StdDraw.clear(StdDraw.BG);
+
       StdDraw.setPenRadius(0.010);
-      StdDraw.setPenColor(StdDraw.BLACK);
+      StdDraw.setPenColor(StdDraw.FG);
 
       for (Point p : points) {
          StdDraw.point(p.xPos, p.yPos);

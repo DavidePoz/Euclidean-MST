@@ -503,6 +503,13 @@ import javax.swing.KeyStroke;
 public final class StdDraw implements ActionListener, MouseListener, MouseMotionListener, KeyListener {
 
     /**
+     *  Custom defined colors
+     */  
+    public static final Color LINES = new Color(43, 175, 231, 170);
+    public static final Color BG = new Color(19, 19, 19);
+    public static final Color FG = new Color(232, 232, 232, 200);
+
+    /**
      *  The color aqua (0, 255, 255).
      */
     public static final Color AQUA = new Color(0, 255, 255);
