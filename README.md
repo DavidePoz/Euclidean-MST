@@ -61,7 +61,7 @@ The operations performed inside the main loop are:
 - 'poll' : this is a 'removeMin' operation on a heap-based PQ and therefore costs $O(\log n^2)\in O(\log n)$.
 - **Scan neighbors** : given the assumption of integer coordinates and the dimensions of a grid cell, this operation costs $O(\alpha ^2)$.
 
-Since this loop runs (at most) as many times as there are entries in the queue, we conclude that the worst-case complexity is $O(n^2 \log n$.
+Since this loop runs (at most) as many times as there are entries in the queue, we conclude that the worst-case complexity is $O(n^2 \log n)$.
 
 In reality, for small enough values of $\alpha$ (compared to $n$) and an even distribution of the points on the plane, each point $p_i\in D$ adds $k_i=\rho\times \alpha ^2$ neighbors to the PQ, where $\rho$ is the *density* of the points per unit area.
 We can thus safely assume that the priority queue stores $O(n)$ entries, granting us $O(n \log n)$ complexity in this *"average"* case.
