@@ -15,13 +15,14 @@ File structure (top to bottom)
    public static void main(String[] args) {
       
       // Check command line arguments 
-      if (args.length != 2) {
-         System.err.println("Invalid arguments. Correct use is: java EMST <path/to/file.txt> <alpha parameter>");
+      if (args.length < 2 || args.length > 3) {
+         System.err.println("Invalid arguments. Correct use is: java EMST <path/to/file.txt> <alpha> [-v]");
          return;
       }
 
       String filePath = args[0];
       double alpha    = 0.0;
+      boolean vMode   = false;
       
       // Error parsing alpha 
       try {
@@ -31,10 +32,12 @@ File structure (top to bottom)
          return;
       }
 
+      if ( args.length == 3 && args[2].equals("-v") ) vMode = true;
+
       EMST emst;
 
       try {
-         emst = new EMST(filePath, alpha);
+         emst = new EMST(filePath, alpha, vMode);
       } catch (Exception e) {
          System.err.println(e);
          return;
@@ -49,7 +52,8 @@ File structure (top to bottom)
    // Informations read from input file
    private ArrayList<Point> points;                   
    private double alpha;
-   private int vCount;            
+   private int vCount;
+   private boolean visual;
 
    // Output informations
    private double totalWeight;
@@ -60,10 +64,11 @@ File structure (top to bottom)
    private PriorityQueue<Edge> minPQ;                 // Priority Queue for Prim's algorithm
 
    // Initializes by reading the input file, constructs the grid and runs Prim's algorithm 
-   public EMST(String filePath, double a) throws Exception {
+   public EMST(String filePath, double a, boolean v) throws Exception {
 
       alpha = a;
-
+      visual = v;
+   
       points = new ArrayList<>();
       parsePoints(filePath);
       vCount = points.size();
@@ -80,6 +85,8 @@ File structure (top to bottom)
 
    // Prim's algorithm
    private void PrimEMST () {
+
+      if (visual) setupVisuals();
 
       treeEdges   = new ArrayList<>();
       totalWeight = 0.0;
@@ -103,12 +110,20 @@ File structure (top to bottom)
          treeEdges.add(minEdge);
          totalWeight += minEdge.weight;
 
+         if (visual) {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.setPenRadius(0.002);
+            StdDraw.line(u.xPos, u.yPos, v.xPos, v.yPos);
+
+            StdDraw.show();
+            StdDraw.pause(20);
+         }
+
          // Only check the neighbors of the new point
          Point newPoint = u.inEMST ? v : u;
          visitPointNeighborhood(newPoint);
 
       }
-
    }
    
    // Determines p's cell in the grid and computes its distances from the points
@@ -185,6 +200,31 @@ File structure (top to bottom)
          grid.get(cellKey).add(p);
       }
 
+   }
+
+   private void setupVisuals () {
+      int maxCoord = 0;
+
+      for (Point p : points ) {
+         if (p.xPos > maxCoord ) maxCoord = p.xPos;
+         if (p.yPos > maxCoord ) maxCoord = p.yPos;
+      }
+      
+      StdDraw.setCanvasSize(1200,1200);
+
+      StdDraw.setXscale(-maxCoord * 0.05, maxCoord * 1.05);
+      StdDraw.setYscale(-maxCoord * 0.05, maxCoord * 1.05);
+
+      StdDraw.enableDoubleBuffering();
+
+      StdDraw.setPenRadius(0.005);
+      StdDraw.setPenColor(StdDraw.BLACK);
+
+      for (Point p : points) {
+         StdDraw.point(p.xPos, p.yPos);
+      }
+
+      StdDraw.show();
    }
 
    @Override
