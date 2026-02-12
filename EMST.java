@@ -4,30 +4,30 @@ import java.util.*;
 public class EMST {
    
 /*
-Struttura del file (dall'alto verso il basso) :
-   - Metodo main
-   - Implementazione dell'algoritmo di Prim
-   - Altri metodi di supporto
-   - Classi di supporto
+File structure (top to bottom)
+   - Main method
+   - Prim's algorithm implementation
+   - Support methods
+   - Support static classes
 */
 
 // --------------------------------------- MAIN ---------------------------------------
    public static void main(String[] args) {
       
-      // Argomenti da riga di comando non validi
+      // Check command line arguments 
       if (args.length != 2) {
-         System.err.println("Argomenti non validi. Uso corretto: java EMST <percorso file input> <parametro alfa>");
+         System.err.println("Invalid arguments. Correct use is: java EMST <path/to/file.txt> <alpha parameter>");
          return;
       }
 
       String filePath = args[0];
       double alpha    = 0.0;
       
-      // Alfa non può essere interpretato come double
+      // Error parsing alpha 
       try {
          alpha = Double.parseDouble(args[1]);
       } catch (NumberFormatException e) {
-         System.err.println("Errore nella lettura del parametro alfa");
+         System.err.println("Can't interpret alpha as double");
          return;
       }
 
@@ -44,22 +44,22 @@ Struttura del file (dall'alto verso il basso) :
 
    }
 
-// -------------------------------- IMPLEMENTAZIONE STRATEGIA DI PRIM -------------------------------
+// -------------------------------- PRIM'S STRATEGY IMPLEMENTATION -------------------------------
 
-   // Informazioni ottenute dal file di input
+   // Informations read from input file
    private ArrayList<Point> points;                   
    private double alpha;
    private int vCount;            
 
-   // Informazioni per l'output
+   // Output informations
    private double totalWeight;
    private ArrayList<Edge> treeEdges;
 
-   // Struturre di appoggio  
-   private HashMap<Integer, ArrayList<Point>> grid;   // suddivisione del piano n*n in caselle di dimensione alfa*alfa   
-   private PriorityQueue<Edge> minPQ;                 // pq per l'algoritmo di Prim
+   // Helper data structures  
+   private HashMap<Integer, ArrayList<Point>> grid;   // Grid subdivision of the plane. Each grid has dimensions alpha x alpha    
+   private PriorityQueue<Edge> minPQ;                 // Priority Queue for Prim's algorithm
 
-   // Inizializza leggendo i punti dal file, costruisci la griglia di supporto ed esegui l'algoritmo di Prim
+   // Initializes by reading the input file, constructs the grid and runs Prim's algorithm 
    public EMST(String filePath, double a) throws Exception {
 
       alpha = a;
@@ -78,7 +78,7 @@ Struttura del file (dall'alto verso il basso) :
       PrimEMST();
    }
 
-   // Determina EMST con l'algoritmo di Prim 
+   // Prim's algorithm
    private void PrimEMST () {
 
       treeEdges   = new ArrayList<>();
@@ -86,7 +86,7 @@ Struttura del file (dall'alto verso il basso) :
 
       minPQ = new PriorityQueue<>();
 
-      // Scegliamo di partire dal primo punto
+      // Start from the first point 
       Point startPoint = points.get(0);
       visitPointNeighborhood(startPoint);
 
@@ -97,13 +97,13 @@ Struttura del file (dall'alto verso il basso) :
          Point u = minEdge.first;
          Point v = minEdge.second;
 
-         // entrambi i punti sono già conosciuti, salta questo arco
+         // Both points are already in the EMST, skip this edge
          if (u.inEMST && v.inEMST) continue;
 
          treeEdges.add(minEdge);
          totalWeight += minEdge.weight;
 
-         // Determina quale dei due punti è quello nuovo e controlla i suoi vicini
+         // Only check the neighbors of the new point
          Point newPoint = u.inEMST ? v : u;
          visitPointNeighborhood(newPoint);
 
@@ -111,8 +111,8 @@ Struttura del file (dall'alto verso il basso) :
 
    }
    
-   // Determina in quale casella si trova e p e controlla le sue distanze dai punti 
-   // nelle caselle vicine (gli unici che potrebbero essere entro la distanza desiderata)
+   // Determines p's cell in the grid and computes its distances from the points
+   // in neighboring cells (the only ones that may fall within the desired distance)
    private void visitPointNeighborhood(Point p) {
 
       p.inEMST = true;
@@ -120,9 +120,7 @@ Struttura del file (dall'alto verso il basso) :
       int xCell = (int)(p.xPos/alpha);
       int yCell = (int)(p.yPos/alpha);
 
-      // Controlla 9 caselle (quella di p e le 8 vicine)
-      // una casella è di dimensione alfa*alfa, per cui contiene al più alfa^2 punti
-      // => costo O(alfa^2)
+      // Check the neighboring cells
       for (int xShift = -1; xShift <= 1; xShift++) {
          for (int yShift = -1; yShift <= 1; yShift++) {
 
@@ -133,12 +131,12 @@ Struttura del file (dall'alto verso il basso) :
 
                for ( Point nb : neighborPoints ) {
 
-                  // Salta il punto stesso e quelli già nell'EMST
+                  // Skip p and points that are already in the EMST
                   if (nb == p || nb.inEMST) continue;
  
                   Edge candidate = new Edge(p, nb);
 
-                  // Aggiungi i candidati alla coda solo se sono validi
+                  // Only add valid edges to the PQ
                   if (candidate.weight <= alpha) {
                      minPQ.add(candidate);
                   }
@@ -151,16 +149,15 @@ Struttura del file (dall'alto verso il basso) :
 
    }
 
-   // --------------------------------------- METODI DI SUPPORTO ---------------------------------------
+   // --------------------------------------- SUPPORT METHODS ---------------------------------------
 
-   // Legge i punti dal file di input
+   // Reads points from the input file
    private void parsePoints (String filePath) {
 
       try (Scanner fileScan = new Scanner(new FileReader(filePath)) ) {
 
          while (fileScan.hasNextLine()) {
             
-            // Scansiona il prossimo punto (ignora parentesi e virgola)
             Scanner pointScan = new Scanner(fileScan.nextLine());
             pointScan.useDelimiter("[(),\\s]");
             
@@ -175,7 +172,7 @@ Struttura del file (dall'alto verso il basso) :
 
    }
 
-   // Riempie la griglia di supporto : punti nella stessa casella finiscono nello stesso bucket
+   // Construct the grid. Points in the same cell are mapped in the same bucket
    private void fillGrid () {
 
       for (Point p : points) {
@@ -190,7 +187,6 @@ Struttura del file (dall'alto verso il basso) :
 
    }
 
-   // Per output finale
    @Override
    public String toString () {
       
@@ -209,7 +205,7 @@ Struttura del file (dall'alto verso il basso) :
       return outStr;
    }
 
-   // Distanza euclidea
+   // Euclidean distance 
    private static double euclideanDist (Point a, Point b) {
 
       double xDiff = a.xPos - b.xPos;
@@ -218,9 +214,8 @@ Struttura del file (dall'alto verso il basso) :
       return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
    }
 
-   // --------------------------------------- CLASSI DI SUPPORTO ---------------------------------------
+   // --------------------------------------- SUPPORT CLASSES ---------------------------------------
 
-   // Rappresentazione di un punto
    private static class Point {
 
       int xPos, yPos;
@@ -238,7 +233,7 @@ Struttura del file (dall'alto verso il basso) :
       }
    }
 
-   // Rappresentazione di un arco
+   // Edge representation
    static class Edge implements Comparable<Edge> {
 
       Point first, second;
@@ -251,7 +246,7 @@ Struttura del file (dall'alto verso il basso) :
          weight = euclideanDist(aPoint, bPoint);
       }
 
-      // Per far si che la minPQ funzioni
+      // Must be implemented to make the PQ work
       @Override
       public int compareTo (Edge other) {
          return Double.compare(weight, other.weight);
