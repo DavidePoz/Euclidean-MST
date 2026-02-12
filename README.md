@@ -5,12 +5,6 @@ I have refactored the code and added graphical visualization for the exececution
 
 The assignement required to implement and test an algorithm to compute the Euclidean
 Minimum Spanning Tree (EMST) of a set of points in the plane.
-## INDEX
-- [[#THE PROBLEM]]
-- [[#THE SOLUTION]]
-- [[#PROGRAM USAGE]]
-- [[#CREDITS AND AKNOWLEDGEMENTS]]
-# DESCRIPTION
 
 ## THE PROBLEM
 
