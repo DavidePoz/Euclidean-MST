@@ -22,7 +22,7 @@ File structure (top to bottom)
 
       String filePath = args[0];
       double alpha    = 0.0;
-      boolean vMode   = false;
+      boolean vMode   = false;      // Visual mode defaults to false
       
       // Error parsing alpha 
       try {
@@ -43,7 +43,8 @@ File structure (top to bottom)
          return;
       }
 
-      System.out.println(emst);
+      // If not in visual mode, print to terminal
+      if (!vMode) System.out.println(emst);
 
    }
 
@@ -53,6 +54,7 @@ File structure (top to bottom)
    private ArrayList<Point> points;                   
    private double alpha;
    private int vCount;
+   private int maxCoord;
    private boolean visual;
 
    // Output informations
@@ -110,19 +112,33 @@ File structure (top to bottom)
          treeEdges.add(minEdge);
          totalWeight += minEdge.weight;
 
+         // If in visual mode, show each edge being added
          if (visual) {
             StdDraw.setPenColor(StdDraw.RED);
-            StdDraw.setPenRadius(0.002);
+            StdDraw.setPenRadius(0.005);
             StdDraw.line(u.xPos, u.yPos, v.xPos, v.yPos);
 
             StdDraw.show();
-            StdDraw.pause(20);
+            StdDraw.pause(15);
          }
 
          // Only check the neighbors of the new point
          Point newPoint = u.inEMST ? v : u;
          visitPointNeighborhood(newPoint);
 
+      }
+
+      if (visual) {
+         
+         if (treeEdges.size() == vCount - 1) {
+            StdDraw.setPenColor(StdDraw.GREEN);
+            StdDraw.text(maxCoord / 2.0, maxCoord * 1.02, "SUCCESS: a-EMST Computed");
+         } else {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.text(maxCoord / 2.0, maxCoord * 1.02, "FAIL: Alpha too small");
+         }
+      
+         StdDraw.show();
       }
    }
    
@@ -164,7 +180,7 @@ File structure (top to bottom)
 
    }
 
-   // --------------------------------------- SUPPORT METHODS ---------------------------------------
+// --------------------------------------- SUPPORT METHODS ---------------------------------------
 
    // Reads points from the input file
    private void parsePoints (String filePath) {
@@ -202,8 +218,9 @@ File structure (top to bottom)
 
    }
 
+   // Setup the window for visual mode
    private void setupVisuals () {
-      int maxCoord = 0;
+      maxCoord = 0;
 
       for (Point p : points ) {
          if (p.xPos > maxCoord ) maxCoord = p.xPos;
@@ -217,7 +234,7 @@ File structure (top to bottom)
 
       StdDraw.enableDoubleBuffering();
 
-      StdDraw.setPenRadius(0.005);
+      StdDraw.setPenRadius(0.010);
       StdDraw.setPenColor(StdDraw.BLACK);
 
       for (Point p : points) {
@@ -227,6 +244,7 @@ File structure (top to bottom)
       StdDraw.show();
    }
 
+   // Output information to terminal (for visual mode off)
    @Override
    public String toString () {
       
@@ -254,7 +272,7 @@ File structure (top to bottom)
       return Math.sqrt(xDiff * xDiff + yDiff * yDiff);
    }
 
-   // --------------------------------------- SUPPORT CLASSES ---------------------------------------
+// --------------------------------------- SUPPORT CLASSES ---------------------------------------
 
    private static class Point {
 
