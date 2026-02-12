@@ -60,6 +60,7 @@ File structure (top to bottom)
    // Output informations
    private double totalWeight;
    private ArrayList<Edge> treeEdges;
+   int timeStep;
 
    // Helper data structures  
    private HashMap<Integer, ArrayList<Point>> grid;   // Grid subdivision of the plane. Each grid has dimensions alpha x alpha    
@@ -119,7 +120,7 @@ File structure (top to bottom)
             StdDraw.line(u.xPos, u.yPos, v.xPos, v.yPos);
 
             StdDraw.show();
-            StdDraw.pause(15);
+            StdDraw.pause(timeStep);
          }
 
          // Only check the neighbors of the new point
@@ -196,6 +197,8 @@ File structure (top to bottom)
             
             pointScan.close();
          }
+
+         timeStep = (int)Math.log10(points.size());
 
       } catch (Exception e) { 
          System.err.println(e);
